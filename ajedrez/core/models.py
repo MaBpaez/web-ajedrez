@@ -19,8 +19,7 @@ class Torneo(models.Model):
     start = models.DateTimeField('inicio', default=timezone.now)
     finish = models.DateTimeField('final', default=timezone.now)
     end_registration = models.DateTimeField(
-        'fin de inscripción', default=timezone.now, blank=True, null=True
-    )  # tiene que ser campo obligatorio
+        'fin de inscripción', default=timezone.now)
 
     publish = models.DateTimeField('fecha de publicación', default=timezone.now)
     created = models.DateTimeField('fecha de creación', auto_now_add=True)
