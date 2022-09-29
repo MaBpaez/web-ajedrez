@@ -1,0 +1,7 @@
+ADMIN
+-----
+Usuario: chess
+Password: chessmalaga
+
+Django, ejemplo de relacion OneToOneField:
+https://docs.djangoproject.com/en/4.1/topics/db/examples/one_to_one/

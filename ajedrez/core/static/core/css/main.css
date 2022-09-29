@@ -1,0 +1,167 @@
+:root {
+  --nav-link-active: #e7f3ff;
+  --background-link-active: #322381;
+  --nav-link-hover: #1181e8;
+  --bs-list-group-item-padding-y: 0.5rem;
+  --bs-list-group-item-padding-x: 1rem;
+  --max-width: 1248px;
+}
+
+body {
+  /* background-color: #fcf7f1; */
+  background-color: #f4f3f0;
+}
+
+.max-width {
+  max-width: var(--max-width);
+}
+
+/*
+ * ─── BACK TO TOP ───
+ */
+
+#back2Top {
+  width: 40px;
+  line-height: 40px;
+  overflow: hidden;
+  z-index: 999;
+  display: none;
+  cursor: pointer;
+  position: fixed;
+  bottom: 50px;
+  right: 0;
+  text-align: center;
+  font-size: 30px;
+  text-decoration: none;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+}
+
+/*
+.gap {
+  gap: 12px;
+}*/
+
+/* Iconos externos */
+.vertical-icon {
+  height: 16px;
+  vertical-align: text-top;
+  width: 16px;
+}
+
+/* Menú de navegación */
+.navbar-brand {
+  background-image: url(../img/logo.webp);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  height: 76px;
+  margin-right: 0;
+  position: relative;
+  padding: 0;
+  width: 100px;
+}
+
+/* De esta forma para cuando tengamos más opciones en el menú de navegación */
+a.navbar-brand::after {
+  position: absolute;
+  color: #322381;
+  top: 7%;
+  content: "Delegación \A Malagueña \A de Ajedrez";
+  font-size: 16px;
+  font-weight: 600;
+  left: 100%;
+  white-space: pre-wrap;
+}
+
+.nav-link {
+  color: rgba(50, 35, 129, 0.88);
+}
+
+.navbar-nav .nav-link.active {
+  background-color: var(--background-link-active);
+  color: #fff;
+  border-radius: 6px;
+}
+
+.nav-link:focus,
+.nav-link:hover {
+  color: var(--nav-link-hover);
+}
+
+.nav-link:hover {
+  background-color: var(--nav-link-active);
+  border-radius: 6px;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+  color: var(--nav-link-hover);
+  background-color: var(--nav-link-active);
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  color: var(--bs-dropdown-link-active-color);
+  text-decoration: none;
+  background-color: #6ec967;
+}
+
+.list-group-item.active {
+  z-index: 2;
+  color: var(--bs-list-group-active-color);
+  background-color: #6ec967;
+  border-color: #6ec967;
+}
+
+.nav-item {
+  margin: 0 10px;
+}
+
+.nav-link {
+  padding: var(--bs-list-group-item-padding-y) var(--bs-list-group-item-padding-x);
+}
+
+.alert-nuevo {
+  color: white;
+  background-color: #6ec967;
+  border-color: #6ec967;
+}
+
+.alert-curso {
+  color: white;
+  background-color: rebeccapurple;
+  border-color: rebeccapurple;
+}
+
+.alert-finalizado {
+  color: white;
+  background-color: indianred;
+  border-color: indianred;
+}
+
+/* Footer */
+.bd-footer a {
+  color: #495057;
+  text-decoration: none;
+}
+
+.bd-footer a:hover {
+  color: var(--nav-link-hover);
+}
+
+/* Carrusel */
+@media screen and (min-width: 774px) {
+  /* Añadirlo a partir de un breakpoint */
+  .carousel-inner div {
+    height: 600px;
+    object-fit: contain;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .navbar-expand-xl .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto;
+    justify-content: flex-end;
+  }
+}

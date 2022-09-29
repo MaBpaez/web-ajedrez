@@ -1,0 +1,309 @@
+    {% extends "core/base.html" %}
+    {% load static %}
+    {% block title %}Torneos | {{torneo.title }}{% endblock title %}
+
+    {% block css %}{% if torneo.cronica %}<link rel="stylesheet" href="{% static 'core/css/datatables.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'core/css/responsive.dataTables.min.css' %}" />
+    {% endif %}<link rel="stylesheet" href="{% static 'core/css/torneo-detail.css' %}" />{% endblock css %}
+
+    {% block recaptcha %}<script src="https://www.google.com/recaptcha/api.js?render={{recaptcha_site_key}}"></script>{% endblock recaptcha %}
+
+    {% block grecaptcha %}
+      <script>
+        //global grecaptcha
+        grecaptcha.ready(function() {
+          grecaptcha.execute('{{recaptcha_site_key}}', {action: "/torneo_detail/"}).then(function(token) {
+            document.getElementById('g-recaptcha-response').value = token;
+          });
+        });
+      </script>{% endblock grecaptcha%}
+
+    {% block breadcrumb %}<!-- Breadcrumb -->
+    <div class="container my-4">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'torneo:inicio' %}">Inicio</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'torneo:agenda' %}">Torneos</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ torneo.title }}</li>
+        </ol>
+      </nav>
+    </div>{% endblock breadcrumb %}
+
+    <!-- Modal -->
+    {% block section %}<div class="modal fade" id="dangerModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-primary" id="dangerModalTitle">Usuario Registrado</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-danger">Ya existe un registro con este Nombre, Apellidos y Correo electrónico.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="successModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-primary" id="successModalTitle">¡Enhorabuena!</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-success">Te acabas de registrar en el torneo.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
+      </div>
+    </div>{% endblock section %}
+
+    {% block main %}<div class="container col-xxl-8 px-4 py-5">
+      <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <img
+            src="{% if torneo.image %}{{ torneo.image.url }}{% else %}{% static 'core/img/benasque.jpg' %}{% endif %}"
+            class="d-block mx-lg-auto img-fluid rounded-3"
+            alt="Torneo ajedrez Málaga"
+            width="700"
+            height="500"
+            loading="lazy"
+          />
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-5 fw-bold lh-1 mb-3">{{ torneo.title }}</h1>
+          <p class="lead">{{ torneo.body|safe }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="b-example-divider"></div>
+
+    <div class="container px-4 py-5">
+      <div class="row">
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+              <button
+                class="accordion-button fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapseOne"
+                aria-expanded="true"
+                aria-controls="panelsStayOpen-collapseOne"
+              >
+                Bases del torneo
+              </button>
+            </h2>
+            <div
+              id="panelsStayOpen-collapseOne"
+              class="accordion-collapse collapse show"
+              aria-labelledby="panelsStayOpen-headingOne"
+            >
+              <div class="accordion-body">
+                <iframe src="{{ torneo.file_pdf.url }}#view=fitH" width="100%" height="500px"> </iframe>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapseTwo"
+                aria-expanded="false"
+                aria-controls="panelsStayOpen-collapseTwo"
+              >
+                Registrarse
+              </button>
+            </h2>
+            <div
+              id="panelsStayOpen-collapseTwo"
+              class="accordion-collapse collapse"
+              aria-labelledby="panelsStayOpen-headingTwo"
+            >
+              <div class="accordion-body">
+                {% if torneo.registre and allow_registration %}
+                <p class="lead">{{ torneo.registre|safe }}</p>
+                {% elif not torneo.registre and allow_registration %}
+                <!-- Formulario de registro -->
+                <strong>Rellene el siguiente formulario.</strong>
+                <br><br>
+                <ul class="errorlist nonfield">
+                  {% if form.non_field_errors %}<li class="text-danger">
+                    Ya existe un registro con este Nombre, Apellidos y Correo electrónico.
+                  </li>{% endif %}
+                  <!-- <li>{{ form.non_field_errors }}</li> -->
+                </ul>
+                <form action="." method="POST" class="row g-3">
+                  {% csrf_token %}
+                  <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Nombre</label>
+                    <!-- <input type="text" class="form-control" id="inputNombre" /> -->
+                    {{ form.name }}
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="{{ form.surnames.id_for_label }}" class="form-label">Apellidos</label>
+                    <!-- <input type="text" class="form-control" id="inputApellidos" /> -->
+                    {{ form.surnames }}
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="{{ form.population.id_for_label }}" class="form-label">Población</label>
+                    <!-- <input type="text" class="form-control" id="inputPoblacion" /> -->
+                    {{ form.population }}
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="{{ form.mail.id_for_label }}" class="form-label">Email</label>
+                    {{ form.mail }}
+                  </div>
+
+                  <div class="col-md-4">
+                    <label for="{{ form.zip_code.id_for_label }}" class="form-label">Código Postal</label>
+                    <!-- <input type="text" class="form-control" id="inputZip" /> -->
+                    {{ form.zip_code }}
+                  </div>
+
+                  <div class="col-md-4">
+                    <label for="{{ form.date_birth.id_for_label}}" class="form-label">Fecha Nacimiento</label>
+                    <!-- <input type="date" class="form-control" id="inputFecha" /> -->
+                    {{ form.date_birth }}
+                  </div>
+
+                  <div class="col-md-4">
+                    <label for="{{ form.phone.id_for_label}}" class="form-label">Teléfono</label>
+                    <!-- <input type="tel" class="form-control" id="inputTelefono" /> -->
+                    {{ form.phone }}
+                  </div>
+
+                  <div class="col-md-12">
+                    <label for="inputEstado" class="form-label">
+                      En caso de no estar federado y no estar registrado como transeúnte, debe darse de alta previamente
+                      en el siguiente
+                      <a href="http://www.gefe.net/mygefe2/Transeunte.asp?IdJugador=0&I=1"> enlace.</a>
+                    </label>
+                    <select class="form-select" name="status">
+                      <option value="Federado">Federado</option>
+                      <option value="No Federado">No federado</option>
+                      <option value="Transeúnte">Ya estoy registrado como transeúnte</option>
+                    </select>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="form-check ps-0">
+                      <!-- <input class="form-check-input" type="checkbox" id="gridCheck" /> -->
+                      {{ form.privacy_policy }}
+                      <label class="form-check-label" for="{{ form.privacy_policy.id_for_label }}"> Aceptar política privacidad </label>
+                    </div>
+                  </div>
+
+                  <!-- reCAPTCHA input -->
+                  <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+                  <input type="hidden" name="tournament_title" value="{{ torneo.title }}">
+
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary float-end">Enviar</button>
+                  </div>
+                </form>
+                {% else %}
+                <strong>Este torneo no admite más inscripciones:</strong>
+                <!-- <strong>Torneo finalizado, en curso o aforo completado.</strong> -->
+                <ul class="my-1">
+                  <li>Plazo de inscripción superado (consulte las bases).</li>
+                  <li>Torneo finalizado, en curso o aforo completado.</li>
+                </ul>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapseThree"
+                aria-expanded="false"
+                aria-controls="panelsStayOpen-collapseThree"
+              >
+                Inscritos
+              </button>
+            </h2>
+            <div
+              id="panelsStayOpen-collapseThree"
+              class="accordion-collapse collapse"
+              aria-labelledby="panelsStayOpen-headingThree"
+            >
+              <div class="accordion-body">
+                <strong>Pulsa el siguiente botón</strong> para ver el listado de jugadores inscritos en este torneo.
+                <p class="mt-3">
+                  <a class="btn btn-outline-success" href="{{ torneo.inscribed }}" role="button" target="_blank">Ver listado</a>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {% if torneo.cronica %}
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapseFour"
+                aria-expanded="false"
+                aria-controls="panelsStayOpen-collapseFour"
+              >
+                Crónica
+              </button>
+            </h2>
+            <div
+              id="panelsStayOpen-collapseFour"
+              class="accordion-collapse collapse"
+              aria-labelledby="panelsStayOpen-headingFour"
+            >
+              <div class="accordion-body">
+                <p class="mt-3">
+                  {{ torneo.cronica.body|safe }}
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>{% endblock main %}
+
+    {% if torneo.cronica %}
+    {% block javascript %}<script type="text/javascript" src="{% static 'core/js/datatables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'core/js/dataTables.responsive.min.js' %}"></script>{% endblock javascript %}
+    {% block extra %}<script>
+      $(document).ready(function () {
+        $("#new").DataTable({
+          searching: false,
+          language: {
+            url: "/static/core/json/es-ES.json"
+          },
+          ordering: false,
+          responsive: true,
+        });
+      });
+      var dangerModal = new bootstrap.Modal(document.getElementById('dangerModal'), { keyboard: false });
+      var successModal = new bootstrap.Modal(document.getElementById('successModal'), { keyboard: false });
+      {% if form.non_field_errors %}dangerModal.show();{% endif %}
+      {% if submitted_form %}successModal.show();{% endif %}
+    </script>{% endblock extra %}
+    {% endif %}
